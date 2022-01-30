@@ -1,4 +1,5 @@
 import os
+import re
 import parmap
 import argparse
 import pandas as pd
@@ -13,12 +14,10 @@ def save_data(url, article_crawler, size) :
         text = data['text']
 
         if len(text) > size : 
-            try :
-                path = os.path.join('./data', title) + '.txt'
-                with open(path, 'w') as f :
-                    f.write(text)
-            except FileNotFoundError :
-                pass
+            title = re.sub('/', '', title)
+            path = os.path.join('./data', title) + '.txt'
+            with open(path, 'w') as f :
+                f.write(text)
 
 def get(args) :
     article_df = pd.read_csv(args.file_path)
@@ -26,14 +25,14 @@ def get(args) :
     print('Size of articles : %d' %len(article_data))
 
     article_crawler = ArticleCrawler()
-    num_cores = multiprocessing.cpu_count() // 2
+    num_cores = multiprocessing.cpu_count()
     print('The number of Cores : %d \n' %num_cores)
 
     parmap.map(save_data, article_data, article_crawler, args.size, pm_pbar=True, pm_processes=num_cores) 
     
 if __name__ == '__main__' :
     parser = argparse.ArgumentParser()
-    parser.add_argument('--size', type=int, default=1000, help='minimum of text size (default: 1000)')
+    parser.add_argument('--size', type=int, default=500, help='minimum of text size (default: 500)')
     parser.add_argument('--file_path', type=str, default='./info/academic.csv', help='wikipedia articles urls')
 
     args = parser.parse_args()

@@ -7,10 +7,7 @@ import pandas as pd
 import multiprocessing
 
 from queue import Queue
-from socket import timeout
 from article import UrlCrawler
-from urllib3.exceptions import ReadTimeoutError
-from requests.exceptions import ReadTimeout, ConnectionError
 
 def progressBar(que_size, set_size, depth):
     sys.stdout.write("\rQueue Size : {0} , Set Size : {1} , Depth :{2}".format(que_size, set_size, depth))
@@ -45,7 +42,7 @@ def get(args) :
                 que.put((link, depth+1))
                
             urls.update(links)
-        except (ReadTimeout, ConnectionError, ReadTimeoutError, timeout) :
+        except ConnectionError :
             continue
 
     print('\nSize of data : %d ' %len(urls))
@@ -56,7 +53,7 @@ def get(args) :
         url_remains.append(url)
     print('\nSize of remained data : %d' %len(url_remains))
 
-    num_cores = multiprocessing.cpu_count() // 2
+    num_cores = multiprocessing.cpu_count()
     url_list = parmap.map(crawler.get_links, url_remains,  pm_pbar=True, pm_processes=num_cores) 
     url_list = sum(url_list, [])
     urls.update(url_list)

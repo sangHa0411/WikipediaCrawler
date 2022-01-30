@@ -1,4 +1,6 @@
 import re
+import time
+import random
 import requests
 from bs4 import BeautifulSoup
 
@@ -8,7 +10,10 @@ class UrlCrawler :
     
     def get_links(self, url) :
         try :
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, timeout=10)
+            sleep_time = random.uniform(0.001, 0.003)
+            time.sleep(sleep_time)
+
             bs = BeautifulSoup(response.text, 'html.parser')
 
             links = bs.find_all('a', {'href' : re.compile('^(/wiki/)')})
