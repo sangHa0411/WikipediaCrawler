@@ -24,13 +24,15 @@ class UrlCrawler :
 
 class ArticleCrawler :
     def __init__(self,) :
-        pass
+        pass 
 
     def get_text(self, url) :
         try :
             response = requests.get(url)
-            bs = BeautifulSoup(response.text, 'html.parser')
+            sleep_time = random.uniform(0.001, 0.003)
+            time.sleep(sleep_time)
 
+            bs = BeautifulSoup(response.text, 'html.parser')
             passages = bs.find_all('p')
 
             if len(passages) <= 3 :
